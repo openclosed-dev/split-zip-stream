@@ -69,7 +69,7 @@ public class ArchiverApplication implements CommandLineRunner {
             Files.createDirectories(OUTPUT_PATH);
             //createSingleArchiveFile("single.zip");
             createMultivolumeZipFile("split.zip", MAX_VOLUME_SIZE);
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

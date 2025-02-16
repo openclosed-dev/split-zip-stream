@@ -28,8 +28,12 @@ class SplitOutputStream extends OutputStream {
      * @param basePath the base path of volumes.
      * @param maxVolumeSize the maximum volume size in bytes.
      * @param storage the storage used for creating new volumes.
+     * @throws IllegalArgumentException if the value of {@code maxVolumeSize} is invalid.
      */
     SplitOutputStream(String basePath, long maxVolumeSize, Storage storage) {
+        if (maxVolumeSize <= 0) {
+            throw new IllegalArgumentException("maxVolumeSize must be positive number");
+        }
         this.basePath = basePath;
         this.maxVolumeSize = maxVolumeSize;
         this.storage = storage;
