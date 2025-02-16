@@ -28,9 +28,8 @@ class SplitOutputStream extends OutputStream {
      * @param basePath the base path of volumes.
      * @param maxVolumeSize the maximum volume size in bytes.
      * @param storage the storage used for creating new volumes.
-     * @throws IOException I/O error occurred while writing to the storage.
      */
-    SplitOutputStream(String basePath, long maxVolumeSize, Storage storage) throws IOException {
+    SplitOutputStream(String basePath, long maxVolumeSize, Storage storage) {
         this.basePath = basePath;
         this.maxVolumeSize = maxVolumeSize;
         this.storage = storage;
