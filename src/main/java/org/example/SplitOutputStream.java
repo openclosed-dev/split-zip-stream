@@ -1,5 +1,6 @@
 package org.example;
 
+import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
@@ -12,6 +13,8 @@ import org.slf4j.LoggerFactory;
 class SplitOutputStream extends OutputStream {
 
     private static final Logger LOG = LoggerFactory.getLogger(SplitOutputStream.class);
+
+    private static final int BUFFER_SIZE = 64 * 1024;
 
     private final String basePath;
     private final long maxVolumeSize;
@@ -99,7 +102,8 @@ class SplitOutputStream extends OutputStream {
         volumeName = String.format("%s.%03d", basePath, ++volumeCount);
         volumeSize = 0;
         LOG.info("Creating new volume {}", volumeName);
-        return storage.openOutputStream(volumeName);
+        var raw = storage.openOutputStream(volumeName);
+        return new BufferedOutputStream(raw, BUFFER_SIZE);
     }
 
     private void closeVolumeStream() throws IOException {
