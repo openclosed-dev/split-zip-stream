@@ -10,29 +10,45 @@ import java.nio.file.Path;
  * An implementation of {@link Storage}
  * which create streams from local filesystem.
  */
-public class LocalStorage implements Storage {
+class LocalStorage implements Storage {
 
-    private final Path baseDir;
+    private final Path rootDir;
 
     /**
      * Constructs this storage.
-     * @param baseDir the base directory in local filesystem
+     * @param rootDir the base directory in local filesystem
      */
-    public LocalStorage(Path baseDir) {
-        this.baseDir = baseDir;
+    LocalStorage(Path rootDir) {
+        this.rootDir = rootDir;
+    }
+
+    /**
+     * Returns the root path of this storage.
+     * @return the root path of this storage.
+     */
+    public Path getRootDir() {
+        return rootDir;
     }
 
     @Override
-    public InputStream openInputStream(String path) throws IOException {
-        return Files.newInputStream(resolve(path));
+    public InputStream openInputStream(String[] dirs, String filename) throws IOException {
+        var resolved = resolve(dirs, filename);
+        return Files.newInputStream(resolved);
     }
 
     @Override
-    public OutputStream openOutputStream(String path) throws IOException {
-        return Files.newOutputStream(resolve(path));
+    public OutputStream openOutputStream(String[] dirs, String filename) throws IOException {
+        var resolved = resolve(dirs, filename);
+        // Creates directories automatically if not exist
+        Files.createDirectories(resolved.getParent());
+        return Files.newOutputStream(resolved);
     }
 
-    private Path resolve(String path) {
-        return baseDir.resolve(path);
+    private Path resolve(String[] dirs, String filename) {
+        var dir = rootDir;
+        if (dirs.length > 0) {
+            dir = dir.resolve(Path.of("", dirs));
+        }
+        return dir.resolve(filename);
     }
 }

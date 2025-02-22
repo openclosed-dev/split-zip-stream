@@ -3,6 +3,7 @@ package org.example;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Arrays;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,7 +17,8 @@ class SplitOutputStream extends OutputStream {
 
     private static final int BUFFER_SIZE = 64 * 1024;
 
-    private final String basePath;
+    private final String[] dirs;
+    private final String basename;
     private final long maxVolumeSize;
     private final Storage storage;
 
@@ -28,16 +30,24 @@ class SplitOutputStream extends OutputStream {
 
     /**
      * Constructs this stream.
-     * @param basePath the base path of volumes.
+     *
+     * @param dirs the directory hierarchy where the volumes will be stored.
+     * @param basename the base name of the volume files.
      * @param maxVolumeSize the maximum volume size in bytes.
      * @param storage the storage used for creating new volumes.
      * @throws IllegalArgumentException if the value of {@code maxVolumeSize} is invalid.
      */
-    SplitOutputStream(String basePath, long maxVolumeSize, Storage storage) {
+    SplitOutputStream(
+            String[] dirs,
+            String basename,
+            long maxVolumeSize,
+            Storage storage) {
+
         if (maxVolumeSize <= 0) {
             throw new IllegalArgumentException("maxVolumeSize must be positive number");
         }
-        this.basePath = basePath;
+        this.dirs = Arrays.copyOf(dirs, dirs.length);
+        this.basename = basename;
         this.maxVolumeSize = maxVolumeSize;
         this.storage = storage;
         this.volumeCount = 0;
@@ -99,10 +109,11 @@ class SplitOutputStream extends OutputStream {
     }
 
     private OutputStream openVolumeStream() throws IOException {
-        volumeName = String.format("%s.%03d", basePath, ++volumeCount);
+        volumeName = String.format("%s.%03d", basename, ++volumeCount);
         volumeSize = 0;
         LOG.info("Creating new volume {}", volumeName);
-        var raw = storage.openOutputStream(volumeName);
+
+        var raw = storage.openOutputStream(dirs, volumeName);
         return new BufferedOutputStream(raw, BUFFER_SIZE);
     }
 

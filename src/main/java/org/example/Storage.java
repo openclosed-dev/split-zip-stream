@@ -13,17 +13,19 @@ public interface Storage {
 
     /**
      * Creates an input stream at the specified path in this storage.
-     * @param path the path of the stream.
-     * @return an input stream
+     * @param dirs the directory hierarchy of the stream.
+     * @param filename the filename of the stream.
+     * @return an input stream, which should be closed by caller.
      * @throws IOException I/O error occurred while opening the stream.
      */
-    InputStream openInputStream(String path) throws IOException;
+    InputStream openInputStream(String[] dirs, String filename) throws IOException;
 
     /**
      * Creates an output stream at the specified path in this storage.
-     * @param path the path of the stream.
-     * @return an output stream
+     * @param dirs the directory hierarchy of the stream.
+     * @param filename the filename of the stream.
+     * @return an output stream, which should be closed by caller.
      * @throws IOException IOException I/O error occurred while opening the stream.
      */
-    OutputStream openOutputStream(String path) throws IOException;
+    OutputStream openOutputStream(String[] dirs, String filename) throws IOException;
 }
